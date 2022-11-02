@@ -1,0 +1,39 @@
+ubuntu@master:~$ cat deploy.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  dotcms
+spec:
+  selector:
+    matchLabels:
+      app: dotcms
+  replicas: 2
+  template:
+    metadata:
+      name: dotcms
+      labels:
+        app: dotcms
+    spec:
+      containers:
+        - name: dotcms
+          image: dotcms/dotcms:22.03.2_SNAPSHOT
+          ports:
+          - containerPort: 8080
+          env:
+          - name: POSTGRES_USERNAME
+            value: devdb
+          - name: POSTGRES_PASSWORD
+            value: devdb@123
+          - name: POSTGRES_HOSTNAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotcms
+spec:
+  type: NodePort
+  selector:
+    app: dotcms
+  ports:
+  - port: 80
+    targetPort: 8080
